@@ -33,25 +33,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: true,
-          min: 8,
-          is: /^[a-zA-Z0-9]*$/
-        }
+        allowNull: false
       }
     },
     {
       timestamps: false
     }
   );
-
-  User.findByEmail = email =>
-    User.findOne({
-      where: {
-        email
-      }
-    });
 
   return User;
 };
