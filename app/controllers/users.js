@@ -8,7 +8,10 @@ exports.create = (request, response) => {
   return models.users
     .create(request.body)
     .then(model => {
-      response.status(200).json(model);
+      const modelJSON = JSON.parse(JSON.stringify(model));
+      delete modelJSON.password;
+
+      response.status(201).json(modelJSON);
     })
     .catch(error => {
       response.status(400).json(error);

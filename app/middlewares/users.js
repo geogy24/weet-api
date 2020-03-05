@@ -1,4 +1,5 @@
 const { checkSchema } = require('express-validator');
+const bcrypt = require('bcrypt');
 
 exports.create = checkSchema({
   name: {
@@ -23,6 +24,9 @@ exports.create = checkSchema({
     custom: {
       options: value => new RegExp(/^[a-zA-Z0-9]*$/).test(value),
       errorMessage: 'password must contain alphanumeric characters'
+    },
+    customSanitizer: {
+      options: value => bcrypt.hashSync(value, 10)
     }
   }
 });
