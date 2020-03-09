@@ -20,13 +20,13 @@ module.exports = {
           description: 'New user was created'
         },
         400: {
-          description: 'Multiple validation errors',
+          description: 'Multiple validation errors'
         },
         422: {
-          description: 'Multiple validation errors',
+          description: 'Multiple validation errors'
         },
         500: {
-          description: 'Multiple client\'s parameter errors'
+          description: "Multiple client's parameter errors"
         }
       }
     }
