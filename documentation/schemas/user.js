@@ -39,6 +39,17 @@ module.exports = {
       }
     }
   },
+  Session: {
+    type: 'object',
+    properties: {
+      email: {
+        $ref: '#/components/schemas/email'
+      },
+      password: {
+        $ref: '#/components/schemas/password'
+      }
+    }
+  },
   Users: {
     type: 'object',
     properties: {

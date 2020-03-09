@@ -1,4 +1,33 @@
 module.exports = {
+  '/users/session': {
+    post: {
+      tags: ['Session'],
+      description: 'Log in an user',
+      operationId: 'sessionUser',
+      parameters: [],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Session'
+            }
+          }
+        },
+        required: true
+      },
+      responses: {
+        200: {
+          description: 'Logged in'
+        },
+        400: {
+          description: 'User not found'
+        },
+        422: {
+          description: 'Password invalid'
+        }
+      }
+    }
+  },
   '/users': {
     post: {
       tags: ['CRUD operations'],
