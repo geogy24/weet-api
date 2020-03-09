@@ -7,6 +7,7 @@ exports.init = app => {
   app.get('/health', healthCheck);
 
   app.group('/api/v1', router => {
+    router.post('/users/session', usersMiddleware.session, usersController.session);
     router.post('/users', usersMiddleware.create, usersController.create);
   });
 };

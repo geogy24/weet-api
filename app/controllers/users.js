@@ -1,5 +1,25 @@
 const { validationResult } = require('express-validator');
+const jwt = require('jwt-simple');
+const bcrypt = require('bcrypt');
 const models = require('../../app/models');
+
+exports.session = (request, response) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) return response.status(422).json({ errors: errors.array() });
+
+  return models.users
+    .findByEmail(request.body.email)
+    .then(model => {
+      if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
+        response.status(200).json({ token: jwt.encode(model, process.env.SECRET) });
+      } else {
+        response.status(422).json({ errors: [{ msg: 'password invalid' }] });
+      }
+    })
+    .catch(() => {
+      response.status(400).json({ errors: [{ msg: 'user not found' }] });
+    });
+};
 
 exports.create = (request, response) => {
   const errors = validationResult(request);
