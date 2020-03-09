@@ -17,7 +17,6 @@ services:
 
 before_script:
   - psql -c "CREATE DATABASE db_wtraining_test;" -U postgres
-  # - npm run migrations-test
 
 steps:
   test:
