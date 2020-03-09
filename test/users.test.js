@@ -1,4 +1,5 @@
 const request = require('supertest');
+const bcrypt = require('bcrypt');
 const { factory } = require('factory-girl');
 const Chance = require('chance');
 const app = require('../app');
@@ -8,6 +9,76 @@ const chance = new Chance();
 let user = null;
 let response = null;
 factoryByModel('users');
+
+describe('#session', () => {
+  describe('when send valid email and password', () => {
+    beforeEach(async done => {
+      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+
+      response = await request(app)
+        .post('/api/v1/users/session')
+        .send({ email: user.dataValues.email, password });
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('returns token', () => {
+      expect(response.body.token).not.toBeNull();
+    });
+  });
+
+  describe('when password value is invalid', () => {
+    beforeEach(async done => {
+      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+
+      response = await request(app)
+        .post('/api/v1/users/session')
+        .send({
+          email: user.dataValues.email,
+          password: `${chance.word(5)}${chance.integer({ min: 2000 })}`
+        });
+      done();
+    });
+
+    it('responses 422 error', () => {
+      expect(response.statusCode).toEqual(422);
+    });
+
+    it('shows correct error', () => {
+      const error = { errors: [{ msg: 'password invalid' }] };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when user does not exist', () => {
+    beforeEach(async done => {
+      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+
+      response = await request(app)
+        .post('/api/v1/users/session')
+        .send({
+          email: 'test@wolox.co',
+          password
+        });
+      done();
+    });
+
+    it('responses 400 error', () => {
+      expect(response.statusCode).toEqual(400);
+    });
+
+    it('shows correct error', () => {
+      const error = { errors: [{ msg: 'user not found' }] };
+      expect(response.body).toEqual(error);
+    });
+  });
+});
 
 describe('#create', () => {
   describe('when send user data', () => {
