@@ -13,8 +13,8 @@ factoryByModel('users');
 describe('#session', () => {
   describe('when send valid email and password', () => {
     beforeEach(async done => {
-      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
-      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+      const password = chance.string({ length: 8, numeric: true });
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 2) });
 
       response = await request(app)
         .post('/api/v1/users/session')
@@ -33,8 +33,8 @@ describe('#session', () => {
 
   describe('when password value is invalid', () => {
     beforeEach(async done => {
-      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
-      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+      const password = chance.string({ length: 8, numeric: true });
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 2) });
 
       response = await request(app)
         .post('/api/v1/users/session')
@@ -57,8 +57,8 @@ describe('#session', () => {
 
   describe('when user does not exist', () => {
     beforeEach(async done => {
-      const password = `${chance.word(5)}${chance.integer({ min: 2000 })}`;
-      user = await factory.create('users', { password: bcrypt.hashSync(password, 10) });
+      const password = chance.string({ length: 8, numeric: true });
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 2) });
 
       response = await request(app)
         .post('/api/v1/users/session')

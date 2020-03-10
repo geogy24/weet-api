@@ -47,7 +47,7 @@ exports.create = checkSchema({
       errorMessage: 'password must contain alphanumeric characters'
     },
     customSanitizer: {
-      options: value => bcrypt.hashSync(value, 10)
+      options: value => bcrypt.hashSync(value, 2)
     }
   }
 });
