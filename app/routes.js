@@ -9,5 +9,6 @@ exports.init = app => {
   app.group('/api/v1', router => {
     router.post('/users/session', usersMiddleware.session, usersController.session);
     router.post('/users', usersMiddleware.create, usersController.create);
+    router.get('/users', usersMiddleware.verifySession, usersController.list);
   });
 };

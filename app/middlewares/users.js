@@ -1,5 +1,6 @@
 const { checkSchema } = require('express-validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jwt-simple');
 
 exports.session = checkSchema({
   email: {
@@ -21,6 +22,17 @@ exports.session = checkSchema({
     }
   }
 });
+
+exports.verifySession = (request, response, next) => {
+  try {
+    const token = request.headers.authorization;
+    if (jwt.decode(token, process.env.SECRET)) {
+      next();
+    }
+  } catch (error) {
+    response.status(401).json({ errors: [{ msg: 'unauthorized' }] });
+  }
+};
 
 exports.create = checkSchema({
   name: {

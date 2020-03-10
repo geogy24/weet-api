@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const jwt = require('jwt-simple');
 const bcrypt = require('bcrypt');
+const paginate = require('../helpers/pagination');
 const models = require('../../app/models');
 
 exports.session = (request, response) => {
@@ -32,6 +33,16 @@ exports.create = (request, response) => {
       delete modelJSON.password;
 
       response.status(201).json(modelJSON);
+    })
+    .catch(error => {
+      response.status(400).json(error);
+    });
+};
+
+exports.list = (request, response) => {
+  paginate(models.users, ['id', 'name', 'surname', 'email'], request.query.page, request.query.limit)
+    .then(records => {
+      response.status(200).json(records);
     })
     .catch(error => {
       response.status(400).json(error);
