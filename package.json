@@ -71,7 +71,6 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "express-group-routes": "^1.1.0",
     "express-validator": "^6.4.0",
     "express-wolox-logger": "1.1.0",
     "factory-girl": "^5.0.4",
