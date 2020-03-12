@@ -1,13 +1,10 @@
-const { validationResult } = require('express-validator');
-const jwt = require('jwt-simple');
 const bcrypt = require('bcrypt');
-const models = require('../../app/models');
+const jwt = require('jwt-simple');
 
-exports.session = (request, response) => {
-  const errors = validationResult(request);
-  if (!errors.isEmpty()) return response.status(422).json({ errors: errors.array() });
+const service = require('../services/users');
 
-  return models.users
+exports.session = (request, response) =>
+  service
     .findByEmail(request.body.email)
     .then(model => {
       if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
@@ -19,21 +16,21 @@ exports.session = (request, response) => {
     .catch(() => {
       response.status(400).json({ errors: [{ msg: 'user not found' }] });
     });
-};
 
-exports.create = (request, response) => {
-  const errors = validationResult(request);
-  if (!errors.isEmpty()) return response.status(422).json({ errors: errors.array() });
-
-  return models.users
-    .create(request.body)
+exports.create = (request, response) =>
+  bcrypt
+    .hash(request.body.password, 2)
+    .then(result => {
+      request.body.password = result;
+      return service.create(request.body);
+    })
     .then(model => {
       const modelJSON = JSON.parse(JSON.stringify(model));
       delete modelJSON.password;
 
-      response.status(201).json(modelJSON);
+      response.status(201).send(modelJSON);
     })
     .catch(error => {
-      response.status(400).json(error);
+      const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
+      response.status(400).send(errors);
     });
-};
