@@ -32,7 +32,10 @@ exports.create = (request, response, next) => {
 
   Promise.all(validations.map(validation => validation.run(request))).then(() => {
     const errors = validationResult(request);
-    if (!errors.isEmpty()) response.status(422).json({ errors: errors.array() });
-    next();
+    if (errors.isEmpty()) {
+      next();
+    } else {
+      response.status(422).send({ errors: errors.array() });
+    }
   });
 };
