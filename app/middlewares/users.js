@@ -1,48 +1,32 @@
 const { checkSchema, validationResult } = require('express-validator');
-const bcrypt = require('bcrypt');
 
 exports.create = (request, response, next) => {
   const validations = checkSchema({
     name: {
-      type: 'string',
-      exists: {
-        errorMessage: 'name is required'
-      }
+      isString: true,
+      exists: true,
+      errorMessage: 'name is required and must be a string'
     },
     surname: {
-      type: 'string',
-      exists: {
-        errorMessage: 'surname is required'
-      }
+      isString: true,
+      exists: true,
+      errorMessage: 'surname is required and must be a string'
     },
     email: {
-      type: 'string',
-      exists: {
-        errorMessage: 'email is required'
-      },
-      isEmail: {
-        errorMessage: 'the value is not an email'
-      },
+      exists: true,
+      isEmail: true,
       custom: {
-        options: value => new RegExp(/\S+@wolox.\S+/).test(value),
-        errorMessage: 'email must belong to wolox.co domain'
-      }
+        options: value => new RegExp(/\S+@wolox.\S+/).test(value)
+      },
+      errorMessage: 'email is required and must have wolox.co domain'
     },
     password: {
-      type: 'string',
-      exists: {
-        errorMessage: 'password is required'
-      },
+      isString: true,
+      isAlphanumeric: true,
       isLength: {
-        options: { min: 8 },
-        errorMessage: 'password must have 8 characters'
+        options: { min: 8 }
       },
-      isAlphanumeric: {
-        errorMessage: 'password must contain alphanumeric characters'
-      },
-      customSanitizer: {
-        options: value => bcrypt.hashSync(value, 10)
-      }
+      errorMessage: 'password is required, must have at least 8 characters and must be alphanumeric'
     }
   });
 
