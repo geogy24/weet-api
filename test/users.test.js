@@ -19,11 +19,11 @@ describe('/users/session#session', () => {
         email,
         password: bcrypt.hashSync(password, 2)
       });
-      console.log(user);
+
       response = await request(app)
         .post('/users/session')
         .send({ email: user.dataValues.email, password });
-      console.log(response);
+
       done();
     });
 
