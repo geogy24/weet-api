@@ -9,27 +9,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: true
-        }
+        allowNull: false
       },
       surname: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: true
-        }
+        allowNull: false
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        validate: {
-          notNull: true,
-          isEmail: true,
-          is: /\S+@wolox.\S+/
-        }
+        unique: true
       },
       password: {
         type: DataTypes.STRING,
