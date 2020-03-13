@@ -14,11 +14,12 @@ describe('/users/session#session', () => {
   describe('when send valid email and password', () => {
     beforeEach(async done => {
       const password = chance.string({ length: 8, alpha: true, numeric: true });
+      const email = `${chance.word()}@wolox.co`;
       user = await factory.create('users', {
-        email: `${chance.word()}@wolox.co`,
+        email,
         password: bcrypt.hashSync(password, 2)
       });
-
+      console.log(user);
       response = await request(app)
         .post('/users/session')
         .send({ email: user.dataValues.email, password });
