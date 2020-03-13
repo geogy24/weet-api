@@ -8,7 +8,7 @@ exports.session = (request, response) =>
     .findByEmail(request.body.email)
     .then(model => {
       if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
-        response.status(200).json({ token: jwt.encode(model, process.env.SECRET) });
+        response.status(200).json({ token: jwt.encode(model.dataValues, process.env.SECRET) });
       } else {
         response.status(422).json({ errors: [{ msg: 'password invalid' }] });
       }

@@ -84,3 +84,37 @@ exports.create = (request, response, next) => {
     }
   });
 };
+
+exports.list = (request, response, next) => {
+  const validations = checkSchema({
+    page: {
+      in: 'query',
+      optional: true,
+      isInt: {
+        options: {
+          gt: 0
+        }
+      },
+      errorMessage: 'page must be a number greater than zero (0)'
+    },
+    limit: {
+      in: 'query',
+      optional: true,
+      isInt: {
+        options: {
+          gt: 0
+        }
+      },
+      errorMessage: 'limit must be a number greater than zero (0)'
+    }
+  });
+
+  Promise.all(validations.map(validation => validation.run(request))).then(() => {
+    const errors = validationResult(request);
+    if (errors.isEmpty()) {
+      next();
+    } else {
+      response.status(422).send({ errors: errors.array() });
+    }
+  });
+};
