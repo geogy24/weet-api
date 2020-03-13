@@ -227,7 +227,8 @@ describe('/users#list', () => {
       expect(response.statusCode).toEqual(200);
     });
 
-    it('returns correct quanitity of records', () => {
+    it('returns correct quantity of records', () => {
+      console.log(response);
       expect(response.body.records.length).toEqual(5);
     });
 
