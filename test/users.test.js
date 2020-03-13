@@ -22,6 +22,7 @@ describe('/users/session#session', () => {
       response = await request(app)
         .post('/users/session')
         .send({ email: user.dataValues.email, password });
+      console.log(response);
       done();
     });
 
