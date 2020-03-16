@@ -12,37 +12,15 @@ function checkValidations(request, response, next, validations) {
   });
 }
 
-exports.session = (request, response, next) => {
-  const validations = checkSchema({
-    email: {
-      exists: true,
-      isEmail: true,
-      custom: {
-        options: value => new RegExp(/\S+@wolox.\S+/).test(value)
-      },
-      errorMessage: 'email is required and must have wolox.co domain'
-    },
-    password: {
-      isString: true,
-      exists: true,
-      isLength: {
-        options: { min: 8 }
-      },
-      custom: {
-        options: value => new RegExp(/^[a-zA-Z0-9]*$/).test(value)
-      },
-      errorMessage: 'password is required, must have at least 8 characters and must be alphanumeric'
-    }
-  });
-
-  checkValidations(request, response, next, validations);
-};
-
 exports.verifySession = (request, response, next) => {
   try {
     const token = request.headers.authorization;
-    if (jwt.decode(token, process.env.SECRET)) {
+    const jwtDecoded = jwt.decode(token, process.env.SECRET);
+
+    if (jwtDecoded && jwtDecoded.administrator) {
       next();
+    } else {
+      throw new Error('unauthorized');
     }
   } catch (error) {
     response.status(401).json({ errors: [{ msg: 'unauthorized' }] });
@@ -79,38 +57,7 @@ exports.create = (request, response, next) => {
     },
     administrator: {
       isBoolean: true,
-      optional: true,
-      customSanitizer: {
-        // always return false
-        options: () => false
-      }
-    }
-  });
-
-  checkValidations(request, response, next, validations);
-};
-
-exports.list = (request, response, next) => {
-  const validations = checkSchema({
-    page: {
-      in: 'query',
-      optional: true,
-      isInt: {
-        options: {
-          gt: 0
-        }
-      },
-      errorMessage: 'page must be a number greater than zero (0)'
-    },
-    limit: {
-      in: 'query',
-      optional: true,
-      isInt: {
-        options: {
-          gt: 0
-        }
-      },
-      errorMessage: 'limit must be a number greater than zero (0)'
+      optional: true
     }
   });
 

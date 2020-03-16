@@ -1,9 +1,13 @@
 const usersController = require('./controllers/users');
+const adminsController = require('./controllers/admins');
 const usersMiddleware = require('./middlewares/users');
+const adminMiddleware = require('./middlewares/admins');
 const { healthCheck } = require('./controllers/healthCheck');
 
 exports.init = app => {
   app.get('/health', healthCheck);
+
+  app.post('/admin/users', [adminMiddleware.verifySession, adminMiddleware.create], adminsController.create);
 
   app.post('/users/session', usersMiddleware.session, usersController.session);
   app.post('/users', usersMiddleware.create, usersController.create);
