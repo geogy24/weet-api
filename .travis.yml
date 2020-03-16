@@ -25,4 +25,4 @@ steps:
     - npm run test
 
 env:
-  - CXX=g++-4.8 NODE_ENV=testing SECRET=098f6bcd4621d373cade4e832627b4f6
+  - CXX=g++-4.8 NODE_ENV=testing SECRET=098f6bcd4621d373cade4e832627b4f6 PAGINATION_PAGE=1 PAGINATION_LIMIT=10

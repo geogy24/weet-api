@@ -230,7 +230,6 @@ describe('/users#list', () => {
     });
 
     it('returns correct quantity of records', () => {
-      console.log(response);
       expect(response.body.records.length).toEqual(5);
     });
 
