@@ -19,10 +19,10 @@ exports.create = (request, response) => {
       if (Array.isArray(model)) {
         response.status(204).send();
       } else {
-        const modelJSON = JSON.parse(JSON.stringify(model));
-        delete modelJSON.password;
+        const admin = { ...model.dataValues };
+        delete admin.password;
 
-        response.status(201).send(modelJSON);
+        response.status(201).send(admin);
       }
     })
     .catch(error => {
