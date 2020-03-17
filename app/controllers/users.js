@@ -10,10 +10,10 @@ exports.create = (request, response, next) =>
       return service.create(request.body);
     })
     .then(model => {
-      const modelJSON = JSON.parse(JSON.stringify(model));
-      delete modelJSON.password;
+      const user = { ...model.dataValues };
+      delete user.password;
 
-      response.status(201).send(modelJSON);
+      response.status(201).send(user);
     })
     .catch(error => {
       const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
