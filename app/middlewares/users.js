@@ -1,16 +1,7 @@
 const jwt = require('jwt-simple');
-const { checkSchema, validationResult } = require('express-validator');
 
-function checkValidations(request, response, next, validations) {
-  Promise.all(validations.map(validation => validation.run(request))).then(() => {
-    const errors = validationResult(request);
-    if (errors.isEmpty()) {
-      next();
-    } else {
-      response.status(422).send({ errors: errors.array() });
-    }
-  });
-}
+const { checkSchema } = require('express-validator');
+const checkValidations = require('../helpers/checkValidation');
 
 exports.session = (request, response, next) => {
   const validations = checkSchema({
