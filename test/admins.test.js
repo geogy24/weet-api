@@ -12,7 +12,6 @@ const { factoryByModel } = require('./factory/factory_by_models');
 const chance = new Chance();
 let user = null;
 let userLogged = null;
-// const users = null;
 let response = null;
 factoryByModel('users');
 
