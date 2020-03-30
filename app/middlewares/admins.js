@@ -1,6 +1,6 @@
 const jwt = require('jwt-simple');
-
 const { checkSchema } = require('express-validator');
+
 const checkValidations = require('../helpers/checkValidation');
 
 exports.verifySession = (request, response, next) => {
