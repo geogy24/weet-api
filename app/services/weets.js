@@ -7,4 +7,4 @@ const baseUrl = 'http://numbersapi.com/random/year';
 
 exports.create = params => models.weets.create(params);
 exports.weet = () => axios.get(baseUrl);
-exports.paginate = (page, limit) => paginate(models.weets, ['id', 'content'], page, limit);
+exports.paginate = (page, limit) => paginate(models.weets, { attributes: ['id', 'content'] }, page, limit);
