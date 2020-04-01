@@ -68,6 +68,9 @@ module.exports = (sequelize, DataTypes) => {
     User.findOne({
       where: {
         email
+      },
+      attributes: {
+        exclude: ['position']
       }
     });
 
