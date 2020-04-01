@@ -18,7 +18,10 @@ exports.rating = (userId, weetId, score) =>
 
       if (rating) {
         // eslint-disable-next-line no-negated-condition
-        if (rating.dataValues.score !== score) await rating.increment('score', { by: score, transaction });
+        if (rating.dataValues.score !== score) {
+          rating.score = score;
+          await rating.save({ fields: ['score'], transaction });
+        }
       } else {
         await models.ratings.create({ userId, weetId: parseInt(weetId), score });
       }
