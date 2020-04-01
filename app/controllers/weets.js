@@ -31,3 +31,16 @@ exports.list = (request, response) => {
       response.status(400).json(error);
     });
 };
+
+exports.rating = (request, response) => {
+  const jwtDecoded = jwt.decode(request.headers.authorization, process.env.SECRET);
+
+  service
+    .rating(jwtDecoded.id, request.params.id, request.body.score)
+    .then(() => {
+      response.status(200).send();
+    })
+    .catch(error => {
+      response.status(400).json(error);
+    });
+};
