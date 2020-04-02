@@ -1,7 +1,7 @@
 module.exports = {
   '/users/session': {
     post: {
-      tags: ['Session'],
+      tags: ['Sessions'],
       description: 'Log in an user',
       operationId: 'sessionUser',
       parameters: [],
@@ -30,8 +30,8 @@ module.exports = {
   },
   '/users': {
     post: {
-      tags: ['CRUD operations'],
-      description: 'Create user',
+      tags: ['Users'],
+      description: 'Create an user',
       operationId: 'createUser',
       parameters: [],
       requestBody: {
@@ -57,7 +57,7 @@ module.exports = {
       }
     },
     get: {
-      tags: ['CRUD operations'],
+      tags: ['Users'],
       description: 'List users',
       operationId: 'listUsers',
       parameters: [
