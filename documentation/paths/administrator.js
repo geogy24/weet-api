@@ -1,8 +1,8 @@
 module.exports = {
   '/admin/users': {
     post: {
-      tags: ['CRUD operations'],
-      description: 'Create administrator',
+      tags: ['Administrators'],
+      description: 'Create an administrator',
       operationId: 'createAdministrator',
       parameters: [],
       requestBody: {
