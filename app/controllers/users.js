@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jwt-simple');
+const moment = require('moment');
 
 const service = require('../services/users');
 
@@ -8,7 +9,12 @@ exports.session = (request, response) =>
     .findByEmail(request.body.email)
     .then(model => {
       if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
-        response.status(200).json({ token: jwt.encode(model.dataValues, process.env.SECRET) });
+        const payload = Object.assign(model.dataValues, {
+          exp: moment()
+            .add(10, 'minutes')
+            .unix()
+        });
+        response.status(200).json({ token: jwt.encode(payload, process.env.SECRET) });
       } else {
         response.status(422).json({ errors: [{ msg: 'password invalid' }] });
       }
@@ -45,4 +51,16 @@ exports.list = (request, response) => {
     .catch(error => {
       response.status(400).json(error);
     });
+};
+
+exports.invalidateAll = (request, response) => {
+  const token = request.headers.authorization;
+  const payload = jwt.decode(token, process.env.SECRET);
+
+  payload.exp = moment()
+    .subtract(1, 'days')
+    .unix();
+
+  response.set('x-token', jwt.encode(payload, process.env.SECRET));
+  response.status(200).send();
 };

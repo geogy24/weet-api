@@ -17,6 +17,7 @@ exports.init = app => {
     adminsController.create
   );
 
+  app.post('/users/session/invalidate_all', usersMiddleware.verifySession, usersController.invalidateAll);
   app.post('/users/session', usersMiddleware.session, usersController.session);
   app.post('/users', usersMiddleware.create, usersController.create);
   app.get('/users', [usersMiddleware.verifySession, paginationsMiddleware.pagination], usersController.list);
