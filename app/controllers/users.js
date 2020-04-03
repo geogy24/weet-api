@@ -31,6 +31,10 @@ exports.create = (request, response) => {
       return service.create(request.body);
     })
     .then(model => {
+      service.sendEmail(model);
+      return model;
+    })
+    .then(model => {
       const user = { ...model.dataValues };
       delete user.password;
 
