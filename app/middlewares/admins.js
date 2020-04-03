@@ -1,14 +1,19 @@
 const jwt = require('jwt-simple');
 const { checkSchema } = require('express-validator');
+const moment = require('moment');
 
 const checkValidations = require('../helpers/checkValidation');
 
 exports.verifySession = (request, response, next) => {
   try {
     const token = request.headers.authorization;
-    const jwtDecoded = jwt.decode(token, process.env.SECRET);
+    const payload = jwt.decode(token, process.env.SECRET, false);
 
-    if (jwtDecoded && jwtDecoded.administrator) {
+    if (payload && payload.administrator) {
+      payload.exp = moment()
+        .add(10, 'minutes')
+        .unix();
+      response.append('x-token', jwt.encode(payload, process.env.SECRET));
       next();
     } else {
       throw new Error('unauthorized');
