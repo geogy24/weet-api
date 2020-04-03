@@ -1,10 +1,11 @@
-/*  eslint max-lines: ["error", 500]  */
+/*  eslint max-lines: ["error", 700]  */
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const { factory } = require('factory-girl');
 const Chance = require('chance');
 const jwt = require('jwt-simple');
+const moment = require('moment');
 
 const app = require('../app');
 const { factoryByModel } = require('./factory/factory_by_models');
@@ -13,6 +14,7 @@ const chance = new Chance();
 let user = null;
 let users = null;
 let response = null;
+let timestamp = null;
 factoryByModel('users');
 
 describe('/users/session#session', () => {
@@ -344,6 +346,49 @@ describe('/users#list', () => {
         ]
       };
       expect(response.body).toEqual(error);
+    });
+  });
+});
+
+describe('/users/session/invalidate_all#invalidate_all', () => {
+  describe('when have not session', () => {
+    beforeEach(async done => {
+      response = await request(app).post('/users/session/invalidate_all');
+      done();
+    });
+
+    it('responses 401 unathorized', () => {
+      expect(response.statusCode).toEqual(401);
+    });
+
+    it('shows correct error', () => {
+      const error = { errors: [{ msg: 'unauthorized' }] };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when have session', () => {
+    beforeEach(async done => {
+      timestamp = moment()
+        .add(10, 'minutes')
+        .unix();
+
+      response = await request(app)
+        .post('/users/session/invalidate_all')
+        .set('authorization', jwt.encode({ exp: timestamp }, process.env.SECRET));
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('shows correct error', () => {
+      try {
+        jwt.decode(response.headers['x-token'], process.env.SECRET);
+      } catch (exception) {
+        expect(exception.message).toEqual('Token expired');
+      }
     });
   });
 });
