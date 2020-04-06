@@ -6,8 +6,8 @@ const { factory } = require('factory-girl');
 const Chance = require('chance');
 const jwt = require('jwt-simple');
 
-const app = require('../app');
-const { factoryByModel } = require('./factory/factory_by_models');
+const app = require('../../app');
+const { factoryByModel } = require('../factory/factory_by_models');
 
 const chance = new Chance();
 let user = null;
