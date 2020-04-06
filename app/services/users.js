@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+
 const models = require('../../app/models');
 const paginate = require('../helpers/pagination');
 
