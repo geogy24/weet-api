@@ -1,12 +1,17 @@
+/*  eslint max-lines: ["error", 500]  */
+
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const { factory } = require('factory-girl');
 const Chance = require('chance');
+const jwt = require('jwt-simple');
+
 const app = require('../app');
 const { factoryByModel } = require('./factory/factory_by_models');
 
 const chance = new Chance();
 let user = null;
+let users = null;
 let response = null;
 factoryByModel('users');
 
@@ -182,6 +187,157 @@ describe('/users#create', () => {
 
     it('responses 422 error', () => {
       expect(response.statusCode).toEqual(422);
+    });
+  });
+});
+
+describe('/users#list', () => {
+  describe('when have not session', () => {
+    beforeEach(async done => {
+      response = await request(app)
+        .get('/users')
+        .query({
+          page: 1,
+          limit: 10
+        });
+      done();
+    });
+
+    it('responses 401 unathorized', () => {
+      expect(response.statusCode).toEqual(401);
+    });
+
+    it('shows correct error', () => {
+      const error = { errors: [{ msg: 'unauthorized' }] };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when not send page or limit', () => {
+    beforeEach(async done => {
+      users = await factory.createMany('users', 5, {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+      });
+
+      response = await request(app)
+        .get('/users')
+        .set('authorization', jwt.encode(users[0].dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('returns correct quantity of records', () => {
+      expect(response.body.records.length).toEqual(5);
+    });
+
+    it('returns correct records', () => {
+      const createdUserIds = users.map(createdUser => createdUser.dataValues.id).sort();
+      const responseUserIds = response.body.records.map(responseUser => responseUser.id).sort();
+      expect(responseUserIds).toEqual(createdUserIds);
+    });
+  });
+
+  describe('when send page or limit', () => {
+    beforeEach(async done => {
+      users = await factory.createMany('users', 5, {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+      });
+
+      response = await request(app)
+        .get('/users')
+        .query({
+          page: 1,
+          limit: 10
+        })
+        .set('authorization', jwt.encode(users[0].dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('returns correct quanitity of records', () => {
+      expect(response.body.records.length).toEqual(5);
+    });
+
+    it('returns correct records', () => {
+      const createdUserIds = users.map(createdUser => createdUser.dataValues.id).sort();
+      const responseUserIds = response.body.records.map(responseUser => responseUser.id).sort();
+      expect(responseUserIds).toEqual(createdUserIds);
+    });
+  });
+
+  describe('when send invalid page', () => {
+    beforeEach(async done => {
+      user = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+      });
+
+      response = await request(app)
+        .get('/users')
+        .query({
+          page: '@!#$',
+          limit: 10
+        })
+        .set('authorization', jwt.encode(user.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 422 error', () => {
+      expect(response.statusCode).toEqual(422);
+    });
+
+    it('returns correct error', () => {
+      const error = {
+        errors: [
+          {
+            value: '@!#$',
+            msg: 'page must be a number greater than zero (0)',
+            param: 'page',
+            location: 'query'
+          }
+        ]
+      };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when send invalid limit', () => {
+    beforeEach(async done => {
+      user = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+      });
+
+      response = await request(app)
+        .get('/users')
+        .query({
+          page: 1,
+          limit: '@!#$'
+        })
+        .set('authorization', jwt.encode(user.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 422 error', () => {
+      expect(response.statusCode).toEqual(422);
+    });
+
+    it('returns correct error', () => {
+      const error = {
+        errors: [
+          {
+            value: '@!#$',
+            msg: 'limit must be a number greater than zero (0)',
+            param: 'limit',
+            location: 'query'
+          }
+        ]
+      };
+      expect(response.body).toEqual(error);
     });
   });
 });

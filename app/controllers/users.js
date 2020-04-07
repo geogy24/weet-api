@@ -8,7 +8,7 @@ exports.session = (request, response) =>
     .findByEmail(request.body.email)
     .then(model => {
       if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
-        response.status(200).json({ token: jwt.encode(model, process.env.SECRET) });
+        response.status(200).json({ token: jwt.encode(model.dataValues, process.env.SECRET) });
       } else {
         response.status(422).json({ errors: [{ msg: 'password invalid' }] });
       }
@@ -34,3 +34,14 @@ exports.create = (request, response) =>
       const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
       response.status(400).send(errors);
     });
+
+exports.list = (request, response) => {
+  service
+    .paginate(request.query.page, request.query.limit)
+    .then(records => {
+      response.status(200).json(records);
+    })
+    .catch(error => {
+      response.status(400).json(error);
+    });
+};

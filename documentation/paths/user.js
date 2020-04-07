@@ -55,6 +55,45 @@ module.exports = {
           description: 'Multiple validation errors'
         }
       }
+    },
+    get: {
+      tags: ['CRUD operations'],
+      description: 'List users',
+      operationId: 'listUsers',
+      parameters: [
+        {
+          name: 'authorization',
+          in: 'header',
+          required: true,
+          description: 'authorization token',
+          schema: {
+            type: 'string'
+          }
+        },
+        {
+          name: 'page',
+          in: 'query',
+          required: false,
+          description: 'page',
+          schema: {
+            type: 'integer'
+          }
+        },
+        {
+          name: 'limit',
+          in: 'query',
+          required: false,
+          description: 'limit',
+          schema: {
+            type: 'integer'
+          }
+        }
+      ],
+      responses: {
+        200: {
+          description: 'List of users'
+        }
+      }
     }
   }
 };

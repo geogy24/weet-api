@@ -7,4 +7,5 @@ exports.init = app => {
 
   app.post('/users/session', usersMiddleware.session, usersController.session);
   app.post('/users', usersMiddleware.create, usersController.create);
+  app.get('/users', [usersMiddleware.verifySession, usersMiddleware.list], usersController.list);
 };
