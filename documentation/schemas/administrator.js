@@ -23,7 +23,7 @@ module.exports = {
     type: 'boolean',
     example: 'true'
   },
-  Admin: {
+  Administrator: {
     type: 'object',
     properties: {
       id: {
@@ -57,13 +57,13 @@ module.exports = {
       }
     }
   },
-  Admins: {
+  Administrators: {
     type: 'object',
     properties: {
       users: {
         type: 'array',
         items: {
-          $ref: '#/components/schemas/Admin'
+          $ref: '#/components/schemas/Administrator'
         }
       }
     }

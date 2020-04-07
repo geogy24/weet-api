@@ -1,9 +1,11 @@
 const user = require('./user');
-const admin = require('./admin');
+const administrator = require('./administrator');
+const weet = require('./weet');
 
 module.exports = {
-  ...admin,
+  ...administrator,
   ...user,
+  ...weet,
   Error: {
     type: 'object',
     properties: {
