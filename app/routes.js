@@ -5,5 +5,6 @@ const { healthCheck } = require('./controllers/healthCheck');
 exports.init = app => {
   app.get('/health', healthCheck);
 
+  app.post('/users/session', usersMiddleware.session, usersController.session);
   app.post('/users', usersMiddleware.create, usersController.create);
 };

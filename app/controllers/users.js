@@ -1,6 +1,21 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jwt-simple');
 
 const service = require('../services/users');
+
+exports.session = (request, response) =>
+  service
+    .findByEmail(request.body.email)
+    .then(model => {
+      if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
+        response.status(200).json({ token: jwt.encode(model, process.env.SECRET) });
+      } else {
+        response.status(422).json({ errors: [{ msg: 'password invalid' }] });
+      }
+    })
+    .catch(() => {
+      response.status(400).json({ errors: [{ msg: 'user not found' }] });
+    });
 
 exports.create = (request, response) =>
   bcrypt
