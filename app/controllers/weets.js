@@ -20,3 +20,14 @@ exports.create = (request, response) =>
       const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
       response.status(400).send(errors);
     });
+
+exports.list = (request, response) => {
+  service
+    .paginate(request.query.page, request.query.limit)
+    .then(records => {
+      response.status(200).json(records);
+    })
+    .catch(error => {
+      response.status(400).json(error);
+    });
+};

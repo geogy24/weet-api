@@ -13,7 +13,9 @@ const { factoryByModel } = require('./factory/factory_by_models');
 const chance = new Chance();
 let userLogged = null;
 let response = null;
+let weets = null;
 factoryByModel('users');
+factoryByModel('weets');
 
 describe('/weets#create', () => {
   describe('when have not session', () => {
@@ -89,6 +91,177 @@ describe('/weets#create', () => {
         const error = { error: 'Weet must have 140 characters maximum' };
         expect(response.body).toEqual(error);
       });
+    });
+  });
+});
+
+describe('/weets#list', () => {
+  describe('when have not session', () => {
+    beforeEach(async done => {
+      response = await request(app)
+        .get('/weets')
+        .query({
+          page: 1,
+          limit: 10
+        });
+      done();
+    });
+
+    it('responses 401 unathorized', () => {
+      expect(response.statusCode).toEqual(401);
+    });
+
+    it('shows correct error', () => {
+      const error = { errors: [{ msg: 'unauthorized' }] };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when not send page or limit', () => {
+    beforeEach(async done => {
+      userLogged = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
+      });
+
+      weets = await factory.createMany('weets', 5, {
+        userId: userLogged.dataValues.id
+      });
+
+      response = await request(app)
+        .get('/weets')
+        .set('authorization', jwt.encode(userLogged.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('returns correct quantity of records', () => {
+      expect(response.body.records.length).toEqual(5);
+    });
+
+    it('returns correct records', () => {
+      const createdWeetIds = weets.map(createdWeet => createdWeet.dataValues.id).sort();
+      const responseWeetIds = response.body.records.map(responseWeet => responseWeet.id).sort();
+      expect(responseWeetIds).toEqual(createdWeetIds);
+    });
+  });
+
+  describe('when send page or limit', () => {
+    beforeEach(async done => {
+      userLogged = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
+      });
+
+      weets = await factory.createMany('weets', 5, {
+        userId: userLogged.dataValues.id
+      });
+
+      response = await request(app)
+        .get('/weets')
+        .query({
+          page: 1,
+          limit: 10
+        })
+        .set('authorization', jwt.encode(userLogged.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 200 ok', () => {
+      expect(response.statusCode).toEqual(200);
+    });
+
+    it('returns correct quanitity of records', () => {
+      expect(response.body.records.length).toEqual(5);
+    });
+
+    it('returns correct records', () => {
+      const createdWeetIds = weets.map(createdWeet => createdWeet.dataValues.id).sort();
+      const responseWeetIds = response.body.records.map(responseWeet => responseWeet.id).sort();
+      expect(responseWeetIds).toEqual(createdWeetIds);
+    });
+  });
+
+  describe('when send invalid page', () => {
+    beforeEach(async done => {
+      userLogged = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
+      });
+
+      weets = await factory.createMany('weets', 5, {
+        userId: userLogged.dataValues.id
+      });
+
+      response = await request(app)
+        .get('/weets')
+        .query({
+          page: '@!#$',
+          limit: 10
+        })
+        .set('authorization', jwt.encode(userLogged.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 422 error', () => {
+      expect(response.statusCode).toEqual(422);
+    });
+
+    it('returns correct error', () => {
+      const error = {
+        errors: [
+          {
+            value: '@!#$',
+            msg: 'page must be a number greater than zero (0)',
+            param: 'page',
+            location: 'query'
+          }
+        ]
+      };
+      expect(response.body).toEqual(error);
+    });
+  });
+
+  describe('when send invalid limit', () => {
+    beforeEach(async done => {
+      userLogged = await factory.create('users', {
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
+      });
+
+      weets = await factory.createMany('weets', 5, {
+        userId: userLogged.dataValues.id
+      });
+
+      response = await request(app)
+        .get('/weets')
+        .query({
+          page: 1,
+          limit: '@!#$'
+        })
+        .set('authorization', jwt.encode(userLogged.dataValues, process.env.SECRET));
+      done();
+    });
+
+    it('responses 422 error', () => {
+      expect(response.statusCode).toEqual(422);
+    });
+
+    it('returns correct error', () => {
+      const error = {
+        errors: [
+          {
+            value: '@!#$',
+            msg: 'limit must be a number greater than zero (0)',
+            param: 'limit',
+            location: 'query'
+          }
+        ]
+      };
+      expect(response.body).toEqual(error);
     });
   });
 });
