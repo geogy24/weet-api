@@ -12,8 +12,8 @@ module.exports = {
     description: 'WTraining',
     termsOfService: '',
     contact: {
-      name: 'Wolox',
-      email: 'tls@wolox.com.ar',
+      name: 'Jorge Díaz',
+      email: 'jorge.diaz@wolox.co',
       url: 'https://www.wolox.com.ar/'
     },
     license: {
@@ -22,12 +22,8 @@ module.exports = {
   },
   servers: [
     {
-      url: `http://localhost:${port}/`,
+      url: `http://localhost:${port}/api/v1`,
       description: 'Local server'
-    },
-    {
-      url: 'https://api_url_testing',
-      description: 'Testing server'
     }
   ],
   security: [],
