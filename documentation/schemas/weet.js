@@ -7,6 +7,10 @@ module.exports = {
     type: 'string',
     example: 'new weet'
   },
+  score: {
+    type: 'integer',
+    example: 5
+  },
   Weet: {
     type: 'object',
     properties: {
@@ -29,6 +33,14 @@ module.exports = {
         items: {
           $ref: '#/components/schemas/weet'
         }
+      }
+    }
+  },
+  Rating: {
+    type: 'object',
+    properties: {
+      score: {
+        $ref: '#/components/schemas/score'
       }
     }
   }

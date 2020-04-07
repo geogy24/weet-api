@@ -64,5 +64,50 @@ module.exports = {
         }
       }
     }
+  },
+  '/weets/:id/rating': {
+    post: {
+      tags: ['Weets'],
+      description: 'Weet rating',
+      operationId: 'weetRating',
+      parameters: [
+        {
+          name: 'authorization',
+          in: 'header',
+          required: true,
+          description: 'authorization token',
+          schema: {
+            type: 'string'
+          }
+        },
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'weet identification',
+          schema: {
+            type: 'string'
+          }
+        }
+      ],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Rating'
+            }
+          }
+        },
+        required: true
+      },
+      responses: {
+        201: {
+          description: 'New weet was created'
+        },
+        400: {
+          description: 'Weet third party error'
+        }
+      }
+    }
   }
 };
