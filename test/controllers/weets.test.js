@@ -7,9 +7,9 @@ const Chance = require('chance');
 const jwt = require('jwt-simple');
 const nock = require('nock');
 
-const app = require('../app');
-const { factoryByModel } = require('./factory/factory_by_models');
-const models = require('../app/models');
+const app = require('../../app');
+const { factoryByModel } = require('../factory/factory_by_models');
+const models = require('../../app/models');
 
 const chance = new Chance();
 let userLogged = null;

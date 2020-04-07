@@ -1,3 +1,5 @@
+const nodemailer = require('nodemailer');
+
 const models = require('../../app/models');
 const paginate = require('../helpers/pagination');
 
@@ -22,4 +24,33 @@ exports.paginate = (page, limit) => {
   };
 
   return paginate(models.users, options, page, limit);
+};
+exports.sendEmail = receiver => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.MAIL_SMTP,
+    port: process.env.MAIL_PORT,
+    secure: false,
+    auth: {
+      user: process.env.MAIL_USERNAME,
+      pass: process.env.MAIL_PASSWORD
+    }
+  });
+
+  transporter.sendMail(
+    {
+      from: process.env.MAIL_USERNAME,
+      to: receiver.email,
+      subject: `Bienvenido ${receiver.name}`,
+      text: 'El equipo de relaciones te da la bienvenida a nuestro servicio',
+      html: '<b>El equipo de relaciones te da la bienvenida a nuestro servicio</b>'
+    },
+    (error, information) => {
+      if (error) {
+        console.log(error); // eslint-disable-line no-console
+      } else {
+        console.log('Message sent: %s', information.messageId); // eslint-disable-line no-console
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(information)); // eslint-disable-line no-console
+      }
+    }
+  );
 };
