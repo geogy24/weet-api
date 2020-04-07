@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 const service = require('../services/users');
 
-exports.create = (request, response, next) =>
+exports.create = (request, response) =>
   bcrypt
     .hash(request.body.password, 2)
     .then(result => {
@@ -18,5 +18,4 @@ exports.create = (request, response, next) =>
     .catch(error => {
       const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
       response.status(400).send(errors);
-      next();
     });
