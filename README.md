@@ -1,4 +1,5 @@
 # WTraining
+[![Build Status](https://travis-ci.org/geogy24/w-express-js.svg?branch=master)](https://travis-ci.org/geogy24/w-express-js)
 
 WTraining
 

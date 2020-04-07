@@ -18,5 +18,11 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE DATABASE bookstest;" -U postgres
-  - npm run migrations-test
+  - psql -c "CREATE DATABASE db_wtraining_test;" -U postgres
+
+steps:
+  test:
+    - npm run test
+
+env:
+  - CXX=g++-4.8 NODE_ENV=testing
