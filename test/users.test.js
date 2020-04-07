@@ -22,7 +22,8 @@ describe('/users/session#session', () => {
       const email = `${chance.word()}@wolox.co`;
       user = await factory.create('users', {
         email,
-        password: bcrypt.hashSync(password, 2)
+        password: bcrypt.hashSync(password, 2),
+        administrator: false
       });
 
       response = await request(app)
@@ -46,7 +47,8 @@ describe('/users/session#session', () => {
       const password = chance.string({ length: 8, numeric: true });
       user = await factory.create('users', {
         email: `${chance.word()}@wolox.co`,
-        password: bcrypt.hashSync(password, 2)
+        password: bcrypt.hashSync(password, 2),
+        administrator: false
       });
 
       response = await request(app)
@@ -71,7 +73,7 @@ describe('/users/session#session', () => {
   describe('when user does not exist', () => {
     beforeEach(async done => {
       const password = chance.string({ length: 8, numeric: true });
-      user = await factory.create('users', { password: bcrypt.hashSync(password, 2) });
+      user = await factory.create('users', { password: bcrypt.hashSync(password, 2), administrator: false });
 
       response = await request(app)
         .post('/users/session')
@@ -98,7 +100,8 @@ describe('/users#create', () => {
     beforeEach(async done => {
       user = await factory.build('users', {
         email: `${chance.word()}@wolox.co`,
-        password: chance.string({ length: 8, alpha: true, numeric: true })
+        password: chance.string({ length: 8, alpha: true, numeric: true }),
+        administrator: false
       });
 
       response = await request(app)
@@ -155,7 +158,8 @@ describe('/users#create', () => {
     beforeEach(async done => {
       const userCreated = await factory.create('users', {
         email: `${chance.word()}@wolox.co`,
-        password: chance.string({ length: 8, alpha: true, numeric: true })
+        password: chance.string({ length: 8, alpha: true, numeric: true }),
+        administrator: false
       });
       user = await factory.build('users', {
         email: userCreated.email,
@@ -274,7 +278,8 @@ describe('/users#list', () => {
   describe('when send invalid page', () => {
     beforeEach(async done => {
       user = await factory.create('users', {
-        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
       });
 
       response = await request(app)
@@ -309,7 +314,8 @@ describe('/users#list', () => {
   describe('when send invalid limit', () => {
     beforeEach(async done => {
       user = await factory.create('users', {
-        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2)
+        password: bcrypt.hashSync(chance.string({ length: 8, numeric: true }), 2),
+        administrator: false
       });
 
       response = await request(app)

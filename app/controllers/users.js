@@ -17,7 +17,7 @@ exports.session = (request, response) =>
       response.status(400).json({ errors: [{ msg: 'user not found' }] });
     });
 
-exports.create = (request, response) =>
+exports.create = (request, response) => {
   bcrypt
     .hash(request.body.password, 2)
     .then(result => {
@@ -34,6 +34,7 @@ exports.create = (request, response) =>
       const errors = JSON.stringify(error) === '{}' ? { error: error.message } : error;
       response.status(400).send(errors);
     });
+};
 
 exports.list = (request, response) => {
   service
