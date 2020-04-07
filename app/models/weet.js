@@ -25,5 +25,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  Weet.associate = models => {
+    Weet.belongsTo(models.users, { sourceKey: 'userId' });
+  };
+
+  Weet.userHaveMaxQuantityWeets = () =>
+    Weet.findAll({
+      attributes: ['userId', [sequelize.fn('COUNT', sequelize.col('*')), 'quantity']],
+      include: [
+        {
+          model: sequelize.models.users,
+          attributes: ['email', 'name']
+        }
+      ],
+      group: ['weets.userId', 'user.id', 'user.email', 'user.name'],
+      order: sequelize.literal('quantity DESC')
+    });
+
   return Weet;
 };
