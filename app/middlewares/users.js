@@ -1,4 +1,5 @@
 const jwt = require('jwt-simple');
+const moment = require('moment');
 const { checkSchema } = require('express-validator');
 
 const checkValidations = require('../helpers/checkValidation');
@@ -32,7 +33,13 @@ exports.session = (request, response, next) => {
 exports.verifySession = (request, response, next) => {
   try {
     const token = request.headers.authorization;
-    if (jwt.decode(token, process.env.SECRET)) {
+    const payload = jwt.decode(token, process.env.SECRET, false);
+
+    if (payload) {
+      payload.exp = moment()
+        .add(10, 'minutes')
+        .unix();
+      response.append('x-token', jwt.encode(payload, process.env.SECRET));
       next();
     }
   } catch (error) {

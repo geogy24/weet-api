@@ -1,4 +1,30 @@
 module.exports = {
+  '/users/session/invalidate_all': {
+    post: {
+      tags: ['Users'],
+      description: 'Log out user',
+      operationId: 'logOutUser',
+      parameters: [
+        {
+          name: 'authorization',
+          in: 'header',
+          required: true,
+          description: 'authorization token',
+          schema: {
+            type: 'string'
+          }
+        }
+      ],
+      responses: {
+        200: {
+          description: 'Closed sessions'
+        },
+        401: {
+          description: 'Not authorized'
+        }
+      }
+    }
+  },
   '/users/session': {
     post: {
       tags: ['Sessions'],
@@ -92,6 +118,9 @@ module.exports = {
       responses: {
         200: {
           description: 'List of users'
+        },
+        401: {
+          description: 'Not authorized'
         }
       }
     }
