@@ -40,6 +40,17 @@ exports.verifySession = (request, response, next) => {
   }
 };
 
+exports.verifySession = (request, response, next) => {
+  try {
+    const token = request.headers.authorization;
+    if (jwt.decode(token, process.env.SECRET)) {
+      next();
+    }
+  } catch (error) {
+    response.status(401).json({ errors: [{ msg: 'unauthorized' }] });
+  }
+};
+
 exports.create = (request, response, next) => {
   const validations = checkSchema({
     name: {
