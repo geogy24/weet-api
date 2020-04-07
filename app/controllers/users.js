@@ -1,27 +1,33 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jwt-simple');
 const moment = require('moment');
+const axios = require('axios');
+const qs = require('querystring');
 
 const service = require('../services/users');
 
-exports.session = (request, response) =>
-  service
-    .findByEmail(request.body.email)
-    .then(model => {
-      if (bcrypt.compareSync(request.body.password, model.dataValues.password)) {
-        const payload = Object.assign(model.dataValues, {
-          exp: moment()
-            .add(10, 'minutes')
-            .unix()
-        });
-        response.status(200).json({ token: jwt.encode(payload, process.env.SECRET) });
-      } else {
-        response.status(422).json({ errors: [{ msg: 'password invalid' }] });
+exports.session = (request, response) => {
+  axios
+    .post(
+      'https://dev-nul2up7d.auth0.com/oauth/token',
+      qs.stringify({
+        grant_type: process.env.AUTH0_GRANT_TYPE,
+        client_id: process.env.AUTH0_CLIENT_ID,
+        client_secret: process.env.AUTH0_SECRET,
+        code: request.body.code,
+        redirect_uri: process.env.AUTH0_REDIRECT_URI
+      }),
+      {
+        headers: { 'content-type': 'application/x-www-form-urlencoded' }
       }
+    )
+    .then(res => {
+      response.status(200).send(res.data);
     })
-    .catch(() => {
-      response.status(400).json({ errors: [{ msg: 'user not found' }] });
+    .catch(error => {
+      response.status(400).send(error);
     });
+};
 
 exports.create = (request, response) => {
   bcrypt
