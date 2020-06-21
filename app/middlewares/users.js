@@ -1,51 +1,32 @@
-const jwt = require('jwt-simple');
-const moment = require('moment');
 const { checkSchema } = require('express-validator');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
 
 const checkValidations = require('../helpers/checkValidation');
 
 exports.session = (request, response, next) => {
   const validations = checkSchema({
-    email: {
+    code: {
       exists: true,
-      isEmail: true,
-      custom: {
-        options: value => new RegExp(/\S+@wolox.\S+/).test(value)
-      },
-      errorMessage: 'email is required and must have wolox.co domain'
-    },
-    password: {
       isString: true,
-      exists: true,
-      isLength: {
-        options: { min: 8 }
-      },
-      custom: {
-        options: value => new RegExp(/^[a-zA-Z0-9]*$/).test(value)
-      },
-      errorMessage: 'password is required, must have at least 8 characters and must be alphanumeric'
+      errorMessage: 'code is required and must have alphanumeric characters'
     }
   });
 
   checkValidations(request, response, next, validations);
 };
 
-exports.verifySession = (request, response, next) => {
-  try {
-    const token = request.headers.authorization;
-    const payload = jwt.decode(token, process.env.SECRET, false);
-
-    if (payload) {
-      payload.exp = moment()
-        .add(10, 'minutes')
-        .unix();
-      response.append('x-token', jwt.encode(payload, process.env.SECRET));
-      next();
-    }
-  } catch (error) {
-    response.status(401).json({ errors: [{ msg: 'unauthorized' }] });
-  }
-};
+exports.verifySession = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://dev-nul2up7d.auth0.com/.well-known/jwks.json'
+  }),
+  audience: 'https://localhost:8081.com',
+  issuer: 'https://dev-nul2up7d.auth0.com/',
+  algorithms: ['RS256']
+});
 
 exports.verifySession = (request, response, next) => {
   try {
